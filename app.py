@@ -36,4 +36,25 @@ st.markdown("""
         padding: 15px; border-radius: 10px; border: 1px solid rgba(0, 255, 204, 0.2);
     }
     </style>
-    """, unsafe_allow_html=True)
+    """, unsafe_allow_html=True)  
+
+# ==========================================
+# STEP 2: データの読み書き設定 (Database)
+# ==========================================
+FILE_NAME = "data/data.csv"
+
+# フォルダがない場合は作成
+if not os.path.exists("data"):
+    os.makedirs("data")
+
+def load_data():
+    if os.path.exists(FILE_NAME):
+        df_loaded = pd.read_csv(FILE_NAME, dtype={"Score": str}).fillna("")
+        df_loaded["Date"] = pd.to_datetime(df_loaded["Date"]).dt.date
+        return df_loaded
+    return pd.DataFrame(columns=["Date", "Game", "Result", "Rank", "Score", "Opponents", "Notes"])
+
+def save_data(df):
+    df.to_csv(FILE_NAME, index=False)
+
+df = load_data()
