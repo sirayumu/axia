@@ -58,3 +58,17 @@ def save_data(df):
     df.to_csv(FILE_NAME, index=False)
 
 df = load_data()
+
+# ==========================================
+# STEP 3: 統計情報の表示 (Analytics)
+# ==========================================
+st.title("⚔ VICTO-LOG")
+col1, col2, col3 = st.columns(3)
+total = len(df)
+wins = len(df[df["Result"] == "WIN"])
+win_rate = (wins / total * 100) if total > 0 else 0
+
+col1.metric("Win Rate", f"{win_rate:.1f}%")
+col2.metric("Total Matches", total)
+col3.metric("Wins", wins)
+st.divider()
