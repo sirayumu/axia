@@ -72,3 +72,31 @@ col1.metric("Win Rate", f"{win_rate:.1f}%")
 col2.metric("Total Matches", total)
 col3.metric("Wins", wins)
 st.divider()
+
+# ==========================================
+# STEP 4: 検索とフィルタリング (Search & Filter)
+# ==========================================
+st.header("Filter History")
+search_col1, search_col2 = st.columns(2)
+
+with search_col1:
+    # 下の入力フォームのGame Nameと連動させる
+    search_query = st.text_input(
+        "🔍 Search by Game Name", 
+        value=st.session_state.get('sync_game', ""),
+        placeholder="Fortnite, Apex, etc..."
+    )
+
+with search_col2:
+    date_range = st.date_input("📅 Filter by Date Range", value=(datetime.now().date(), datetime.now().date()))
+
+# フィルタ実行
+display_df = df.copy()
+if search_query:
+    display_df = display_df[display_df["Game"].str.contains(search_query, case=False, na=False)]
+
+if isinstance(date_range, tuple) and len(date_range) == 2:
+    start_date, end_date = date_range
+    display_df = display_df[(display_df["Date"] >= start_date) & (display_df["Date"] <= end_date)]
+
+
