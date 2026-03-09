@@ -137,3 +137,42 @@ else:
 
 st.divider()
 
+# ==========================================
+# STEP 6: 新規データの入力 (Input Form)
+# ==========================================
+st.header("Enter Match Result")
+
+# 検索窓と連動させるための入力欄
+game_input_val = st.text_input("Game Name", key="sync_game", help="入力すると上の表が自動で絞り込まれます")
+
+with st.form("input_form", clear_on_submit=True):
+    c1, c2 = st.columns(2)
+    with c1:
+        date_input = st.date_input("Date *", datetime.now())
+        st.write(f"Adding for: **{game_input_val}**") # 確認用表示
+        result_input = st.radio("Result", ["WIN", "LOSS", "DRAW"], horizontal=True)
+    with c2:
+        rank_input = st.text_input("Rank")
+        score_input = st.text_input("Score", placeholder="例: 13-10")
+        opp_input = st.text_input("Opponents")
+    
+    notes_input = st.text_area("Notes", placeholder="メモなど")
+    submit = st.form_submit_button("SUBMIT")
+
+    if submit:
+        if not game_input_val:
+            st.error("Game Nameを入力してください！")
+        else:
+            new_row = {
+                "Date": date_input,
+                "Game": game_input_val,
+                "Result": result_input,
+                "Rank": rank_input,
+                "Score": score_input,
+                "Opponents": opp_input,
+                "Notes": notes_input
+            }
+            df = pd.concat([df, pd.DataFrame([new_row])], ignore_index=True)
+            save_data(df)
+            st.success("追加完了！")
+            st.rerun()
