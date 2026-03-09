@@ -99,4 +99,41 @@ if isinstance(date_range, tuple) and len(date_range) == 2:
     start_date, end_date = date_range
     display_df = display_df[(display_df["Date"] >= start_date) & (display_df["Date"] <= end_date)]
 
+# ==========================================
+# STEP 5: 履歴の表示と削除 (History List)
+# ==========================================
+st.header("Match History")
+
+if not display_df.empty:
+    display_df = display_df.sort_values("Date", ascending=False)
+    
+    # ヘッダー作成
+    h_cols = st.columns([2, 2, 1, 1, 1, 2, 3, 1])
+    headers = ["DATE", "GAME", "RESULT", "RANK", "SCORE", "OPPONENTS", "NOTES", ""]
+    for i, h in enumerate(headers):
+        h_cols[i].write(f"**{h}**")
+
+    # データ行作成
+    for index, row in display_df.iterrows():
+        cols = st.columns([2, 2, 1, 1, 1, 2, 3, 1])
+        cols[0].write(row["Date"].strftime("%Y/%m/%d"))
+        cols[1].write(row["Game"])
+        
+        res = row["Result"]
+        res_class = "win-text" if res == "WIN" else "loss-text" if res == "LOSS" else ""
+        cols[2].markdown(f'<span class="{res_class}">{res}</span>', unsafe_allow_html=True)
+        
+        cols[3].write(row["Rank"])
+        cols[4].write(str(row["Score"]))
+        cols[5].write(row["Opponents"])
+        cols[6].write(row["Notes"])
+        
+        if cols[7].button("🗑️", key=f"del_{index}"):
+            df = df.drop(index).reset_index(drop=True)
+            save_data(df)
+            st.rerun()
+else:
+    st.info("データが見つかりませんでした。")
+
+st.divider()
 
